@@ -425,11 +425,12 @@
 <script type="text/javascript">
 	$('#btnSubmit').click(function(){
 		$('#waitSection').show();
-		$('#btnSubmit').prop('disabled', true);
+		$('#btnSubmit').hide();
 	});
 	$('#btnNew').click(function(){
 		$('#dataExcel').prop('disabled', false);
 		$('#btnSubmit').prop('disabled', false);
+		$('$btnSubmit').show();
 		$('#reportSection').hide();
 	});
 </script>
