@@ -1,0 +1,20 @@
+@keyframes shadow-pulse
+{
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    /* box-shadow: 0 0 0 9px rgba(0, 0, 0, 0); */
+    box-shadow:  0 0 0 4px #ef9a9a;
+
+  }
+  100% {
+    /* box-shadow: 0 0 0 9px rgba(0, 0, 0, 0); */
+    box-shadow:  0 0 0 4px #ef5350;
+   
+  }
+}
+.pulse_div
+{
+  animation: shadow-pulse 2s infinite;
+}
