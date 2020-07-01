@@ -425,7 +425,7 @@
 <script type="text/javascript">
 	$('#btnSubmit').click(function(){
 		$('#waitSection').show();
-		this.prop('disabled', true);
+		$('#btnSubmit').prop('disabled', true);
 	});
 	$('#btnNew').click(function(){
 		$('#dataExcel').prop('disabled', false);
