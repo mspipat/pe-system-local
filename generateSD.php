@@ -428,10 +428,11 @@
 		$('#btnSubmit').hide();
 	});
 	$('#btnNew').click(function(){
+	$('#reportSection').hide();
 		$('#dataExcel').prop('disabled', false);
 		$('#btnSubmit').prop('disabled', false);
 		$('$btnSubmit').show();
-		$('#reportSection').hide();
+	
 	});
 </script>
 </body>
