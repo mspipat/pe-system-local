@@ -261,7 +261,7 @@ $(document).ready(function(){
 		// alert(addItem1 +''+addItem2);
 			if(addItem1 != '' && addItem2 != ''){
 				var url = 'process/ajax/processData.php?process=add&master='+masterTable+'&newItem1='+addItem1+'&newItem2='+addItem2;
-				alert(url);
+				// alert(url);
 				$.ajax({
 					url: url,
 					method: 'get',

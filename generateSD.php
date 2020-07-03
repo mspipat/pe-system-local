@@ -89,27 +89,33 @@
 					// END Record System Activity 
 					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
 					$uploaded_sheet = $reader->load("process/uploads/SD Data/".$newFileName);
-
+					
 					// ARRAYS 
+					$cc = 'starting';
+					$offRow = 2;
+					$word = "AEE";
+					$maleMaster = array();
+					$terminalMaster = array();
+					$gomusenMaster = array();
+					
 						$wireSizeSummary = array();
 						$floatingCircuitSummary = array();
 						$aeeterminalSummary = array();
 						$maleTerminalSummary = array();
 						$terminalSummary = array();
-						$wireSpotSummary = array();
 						$gomusenSummary = array();
-						$similarSummary = array();
-						$cc = 'starting';
-						$offRow = 2;
-						$word = "AEE";
-						$maleMaster = array();
-						$terminalMaster = array();
 						$wires = array();
+						$wireSpotSummary = array();
+						$similarSummary = array();
+						$L = array();
+						$R = array();
+						$sameWireList = array();
+						$sameWireFinalSummary = array();
 						$sameWires = array();
 						$wireRecord = array();
 						$sameWireSummary = array();
-						$L = array();
-						$R = array();
+						$sameWireFinalSummary = array();
+
 						$sqlSelectMasterSimilar = "SELECT `left-right` AS L, `right-left` AS R FROM `master_similar`";
 						$dataMasterSimilar = $conn_db->query($sqlSelectMasterSimilar);
 						while ($similarItems = $dataMasterSimilar->fetch_array())
@@ -133,7 +139,6 @@
 							$terminalMaster[] = $terminalData['terminal'];
 						}
 
-						$gomusenMaster = array();
 						$sqlSelectGomusen = "SELECT `gomusen` FROM `master_gomusen`";
 						$dataMasterGomusen = $conn_db->query($sqlSelectGomusen);
 						while ($gomusen = $dataMasterGomusen->fetch_assoc()) 
@@ -145,8 +150,8 @@
 						$dataMasterSimilar = $conn_db->query($sqlSelectMasterSimilar);
 	
 			//READ AND PROCESS DATA
-						do 
-						{
+				do 
+				{
 									$cc = $uploaded_sheet->getActiveSheet()->getCell('A'.$offRow)->getValue();
 									$wireNo = $uploaded_sheet->getActiveSheet()->getCell('K'.$offRow)->getValue();
 									$wireSize = $uploaded_sheet->getActiveSheet()->getCell('M'.$offRow)->getValue();
