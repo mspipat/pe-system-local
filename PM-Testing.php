@@ -43,9 +43,14 @@
 	$queryCount = $conn_db->query($sqlSelectSameCount);
 	while ($data = $queryCount->fetch_assoc()) {
 		$num = $data['num'];
+		$connNo = $data['connNo'];
 		if($num >= 2){
-			$sqlGetData = "SELECT * FROM `$tableName` WHERE connNo";
+			$sqlGetData = "SELECT DISTINCT(partsName) FROM `tableName` WHERE connNo = '$connNo' AND partClass LIKE 'C%'";
 			$queryData = $conn_db->query($sqlGetData);
+			echo $count = mysqli_num_rows($queryData);
+			// while ($data = $queryData->fetch_assoc()) {
+				
+			// }
 
 		}
 	}
