@@ -1,33 +1,34 @@
 <?php
 include 'db/conn.php';
-$ipAdd = $_SERVER['REMOTE_ADDR'];
-$tableName = 'pmTemp_'.$ipAdd;
-
-$sameConnSum = array();
-
-$sqlSelectSameCount = "SELECT COUNT(listId) AS TOTAL, connNo  FROM `$tableName` GROUP BY connNo";
-	$queryCount = $conn_db->query($sqlSelectSameCount);
-	while ($data = $queryCount->fetch_assoc())
+$holder = '';
+$tableName = 'pmtemp_172.25.112.223';
+$sqlSamePartsNameData = "SELECT COUNT(listId) AS TOTAL, partsName  FROM `$tableName` GROUP BY partsName";
+	$queryData4 = $conn_db->query($sqlSamePartsNameData);
+	while ($partsNameDat = $queryData4->fetch_assoc())
 	{
-		$num = $data['TOTAL'];
-			if($num >= 2)
+		$num = $partsNameDat['TOTAL'];
+		if($num >= 2)
 			{
-				$connNo = $data['connNo'];
-				$sqlGetData = "SELECT DISTINCT(partsName) as partsName, connNo FROM `$tableName` WHERE connNo = '$connNo' AND partClass LIKE 'C%'";
-				$queryData = $conn_db->query($sqlGetData);
-				$numCount = mysqli_num_rows($queryData);
-				if($numCount >= 2){
-					while ($connectors = $queryData->fetch_assoc()) {
-						$partsName = $connectors['partsName'];
-						$sameConnSum[] = $connNo .'-'.$partsName;
+				$partsName = $partsNameDat['partsName'];
+				$sqlGetData2 = "SELECT wireLength, partsName FROM `$tableName` WHERE partsName = '$partsName' ORDER BY wirelength DESC";
+				$queryData5 = $conn_db->query($sqlGetData2);
+				while ($lengthDat = $queryData5->fetch_assoc()) {
+					if ($holder ==''){
+						$holder = $lengthDat['wireLength'];
+					}else{
+						$holder = $holder - $lengthDat['wireLength'];
 					}
 				}
-				echo "<br>";
-			}else{
-
+				if($holder >= 0 && $holder <= 20 ){
+					$partsUnification[] = $partsName .'/'. $holder;
+				}
+				$holder = '';
 			}
-	}
-	
-
-	print_r($sameConnSum);
-	?>
+		}
+		print_r($partsUnification);
+		?>
+		<!-- $result = $lenghtArr[0];
+		for ($i = 1; $i < count($lenghtArr); $i++) {
+					$result -= $lenghtArr[$i];
+		} 
+	echo $partsName .' '.$result; -->
