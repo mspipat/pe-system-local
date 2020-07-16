@@ -58,7 +58,7 @@
 				if($numCount >= 2){
 					while ($connectors = $queryData->fetch_assoc()) {
 						$partsName = $connectors['partsName'];
-						$sameConnSum[] = $connNo .'-'.$partsName;
+						$sameConnSum[] = $connNo .'/'.$partsName;
 					}
 				}
 			}else{
@@ -75,14 +75,14 @@
 		if($num >= 2)
 			{
 				$partno = $samePartNoData['partno'];
-				$sqlGetData1 = "SELECT DISTINCT(CONCAT(partsName,' ',wireLength)) AS partsName FROM `$tableName` WHERE partNo = '$partno'";
+				$sqlGetData1 = "SELECT DISTINCT(CONCAT(partsName,'/',wireLength)) AS partsName FROM `$tableName` WHERE partNo = '$partno'";
 				$queryData1 = $conn_db->query($sqlGetData1);
 				$numCount1 = mysqli_num_rows($queryData1);
 				if($numCount1 >= 2)
 				{
 					while ($parts = $queryData1->fetch_assoc()) {
 						$partsName = $parts['partsName'];
-						$samePartsSum[] = $partno .' '.$partsName;
+						$samePartsSum[] = $partno .'/'.$partsName;
 					}
 				}
 			}
@@ -99,7 +99,7 @@
 		$checkData = strstr($vsMethod, '(O)');
 		if($checkData == true)
 		{
-			$vsMethodSum[] = $vsPartNo .' '. $vsPartName .' '. $vsMethod;
+			$vsMethodSum[] = $vsPartNo .'/'. $vsPartName .'/'. $vsMethod;
 		}
 	}
 	// CRITERIA 4 - PARTS UNIFICATION
@@ -112,9 +112,10 @@
 		if($num >= 2)
 			{
 				$partsName = $partsNameDat['partsName'];
-				$sqlGetData2 = "SELECT wireLength, partsName FROM `$tableName` WHERE partsName = '$partsName' ORDER BY wirelength DESC";
+				$sqlGetData2 = "SELECT partNo, wireLength, partsName FROM `$tableName` WHERE partsName = '$partsName' ORDER BY wirelength DESC";
 				$queryData5 = $conn_db->query($sqlGetData2);
 				while ($lengthDat = $queryData5->fetch_assoc()) {
+					$partsNo = $lengthDat['partNo'];
 					if ($holder ==''){
 						$holder = $lengthDat['wireLength'];
 					}else{
@@ -122,7 +123,7 @@
 					}
 				}
 				if($holder >= 0 && $holder <= 20 ){
-					$partsUnification[] = $partsName .'/'. $holder;
+					$partsUnification[] = $partsNo .'/'.$partsName .'/'. $holder;
 				}
 				$holder = '';
 			}
@@ -140,6 +141,81 @@
 	echo "<br>";
 	echo "Criteria 4 <br>";
 	print_r($partsUnification);
+
+	// GENERATE EXCEL REPORT
+	$PMExcelRep = new Spreadsheet();
+	$report_sheet = $PMExcelRep->getActiveSheet();
+	$writer = new Xlsx($PMExcelRep);
+	$dateId = date("ymdHis");
+	$rand = rand(000,100);
+	$uploadName = 'test';
+	$fileName = 'PM Report- '.$uploadName.' '.$dateId.''.$rand.'.xlsx';
+
+	// Copy template to New Spreadsheet
+	$temp_reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+	$temp_spreadsheet = $temp_reader->load("process/uploads/PM Data/template.xlsx");
+	$temp_sheet = $temp_spreadsheet->getSheetByName('PM tool');
+	$clonedWorksheet = clone $temp_spreadsheet->getActiveSheet();
+	$PMExcelRep->addExternalSheet($clonedWorksheet);
+	$PMExcelRep->removeSheetByIndex(0);
+	$report_sheet = $PMExcelRep->getSheetByName('PM Tool');
+	
+	// Write the Report in the New Spreadsheet
+	$offRow = 3;
+	$countCri1 = ($sameConnSum);
+	if($countCri1 >= 1)
+	{
+		foreach($sameConnSum as $key => $cri1)
+		{
+			$string = explode("/", $cri1);
+			$report_sheet->getCell('A'.$offRow)->setValue($string[0]);
+			$report_sheet->getCell('B'.$offRow)->setValue($string[1]);
+			$offRow++;
+		}
+	}
+	$offRow = 3;
+	$countCri2 = ($samePartsSum);
+	if($countCri2 >= 1)
+	{
+		foreach($samePartsSum as $key => $cri2)
+		{
+			$string = explode("/", $cri2);
+			$report_sheet->getCell('C'.$offRow)->setValue($string[0]);
+			$report_sheet->getCell('D'.$offRow)->setValue($string[1]);
+			$report_sheet->getCell('E'.$offRow)->setValue($string[2]);
+			$offRow++;
+		}
+	}
+	$offRow = 3;
+	$countCri3 = ($vsMethodSum);
+	if($countCri3 >= 1)
+	{
+		foreach($vsMethodSum as $key => $cri3)
+		{
+			$string = explode("/", $cri3);
+			$report_sheet->getCell('F'.$offRow)->setValue($string[0]);
+			$report_sheet->getCell('G'.$offRow)->setValue($string[1]);
+			$report_sheet->getCell('H'.$offRow)->setValue($string[2]);
+			$offRow++;
+		}
+	}
+	$offRow = 3;
+	$countCri4 = ($partsUnification);
+	if($countCri4 >= 1)
+	{
+		foreach($partsUnification as $key => $cri4)
+		{
+			$string = explode("/", $cri4);
+			$report_sheet->getCell('I'.$offRow)->setValue($string[0]);
+			$report_sheet->getCell('J'.$offRow)->setValue($string[1]);
+			$report_sheet->getCell('K'.$offRow)->setValue($string[2]);
+			$offRow++;
+		}
+	}
+
+	// Save new Spreadsheet
+	$writer->save('process/exports/PM Data/'.$fileName);
+	$dateFinished = date('Y-m-d h:i:s');
 	// $sqlDeleteTbl = "DROP TABLE `$tableName`";
 	// $query1 = $conn_db->query($sqlDeleteTbl);
 	 

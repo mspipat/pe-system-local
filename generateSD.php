@@ -412,7 +412,7 @@
 					}
 					// echo $fileName;
 		// END GENERATE EXCEL REPORT
-			}
+		}
 		}else
 		{
 			?>
